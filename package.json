@@ -1,0 +1,19 @@
+{
+  "name": "collapsible-menu",
+  "version": "1.0.0",
+  "description": "Dead-simple responsive navigation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hinderson/collapsible-menu.git"
+  },
+  "author": "Mattias Hinderson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hinderson/collapsible-menu/issues"
+  },
+  "homepage": "https://github.com/hinderson/collapsible-menu#readme"
+}
