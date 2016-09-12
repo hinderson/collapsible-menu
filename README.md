@@ -78,7 +78,7 @@ Example usage:
     width: 100%;
 }
 
-.nav-primary.is-toggle li.is-selected {
+.nav-primary.is-toggled li.is-selected {
     display: table-caption;
 }
 ```
