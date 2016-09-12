@@ -5,7 +5,7 @@ Dead-simple responsive navigation: checks if a menu is overflowing and appends a
 
 Consider the following HTML markup for a simple website navigation:
 ```
-<nav class="nav-main">
+<nav class="nav-primary">
     <ul>
         <li><a href="/">Menu item</a></li>
         <li class="is-selected"><a href="/">Menu item</a></li>
@@ -22,7 +22,7 @@ An example with CommonJS require:
 ```
 var CollapsibleMenu = require('collapsible-menu');
 
-var mainMenu = new CollapsibleMenu('.nav-main');
+var mainMenu = new CollapsibleMenu('.nav-primary');
 mainMenu.checkOverflow();
 ```
 
