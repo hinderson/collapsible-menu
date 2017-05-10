@@ -29,7 +29,7 @@ mainMenu.checkOverflow();
 The constructor accepts an optional secondary argument of settings/options which comes with the following default values:
 ```
 {
-    selectedClass: 'is-selected',
+    selectedItem: 'li.is-selected',
     toggledClass: 'is-toggled',
     collapsedClass: 'is-collapsed'
 }
