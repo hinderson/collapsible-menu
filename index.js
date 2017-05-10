@@ -80,4 +80,4 @@ const CollapsibleMenu = (query, options = {}) => {
     return { toggleMenu, checkOverflow };
 };
 
-export default Collapsible;
+export default CollapsibleMenu;
