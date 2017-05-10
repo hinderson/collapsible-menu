@@ -1,79 +1,83 @@
-/*! Collapsible Menu - v1
- *  Copyright (c) 2016 Mattias Hinderson
+/*! Collapsible Menu - v1.1
+ *  Copyright (c) 2016-2017 Mattias Hinderson
  *  License: MIT
  */
 
-(function (window, factory) {
-    'use strict';
+// Polyfill .closest()
+if (window.Element && !Element.prototype.closest) {
+    Element.prototype.closest = function(s) {
+        var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+            i,
+            el = this;
+        do {
+            i = matches.length;
+            while (--i >= 0 && matches.item(i) !== el) {};
+        } while ((i < 0) && (el = el.parentElement));
+        return el;
+    };
+}
 
-    if (typeof define == 'function' && define.amd) {
-        define(['./utils'], function(utils) {
-            return factory(window, utils);
-        });
-    } else if (typeof exports == 'object') {
-        module.exports = factory(
-            window,
-            require('./utils')
-        );
+// Polyfill .matches()
+const matches = document.body.matchesSelector || document.body.webkitMatchesSelector || document.body.mozMatchesSelector || document.body.msMatchesSelector || document.body.webkitMatchesSelector || document.body.matchesSelector;
+
+// Helpers
+const isOverflowed = elem => elem.offsetWidth < elem.scrollWidth;
+
+// Constructor
+const CollapsibleMenu = (query, options = {}) => {
+    const $elem = (typeof query === 'string' ? document.querySelector(query) : query);
+
+    let breakpoint = null;
+
+    // Extend default options
+    Object.assign(options, {
+        selectedItem: '[aria-selected="true"]',
+        toggledClass: 'is-toggled',
+        collapsedClass: 'is-collapsed'
+    });
+
+    function toggleMenu (e) {
+        if (matches.apply(e.target, [options.selectedItem])) {
+            $elem.classList.toggle(options.toggledClass);
+            e.preventDefault();
+        }
     }
 
-}(window, function factory (window, utils) {
-    'use strict';
+    function closeMenu (e) {
+        if ($elem.classList.contains(options.toggledClass) && e.target.closest(query) !== $elem) {
+            $elem.classList.remove(options.toggledClass);
+        }
+    }
 
-    var CollapsibleMenu = function (elemSelector, options) {
-        var elem = document.querySelector(elemSelector);
-        var breakpoint = null;
+    function enableClick () {
+        $elem.addEventListener('click', toggleMenu);
+        document.body.addEventListener('click', closeMenu);
+    }
 
-        var defaults = {
-            selectedClass: 'is-selected',
-            toggledClass: 'is-toggled',
-            collapsedClass: 'is-collapsed'
-        };
+    function disableClick () {
+        $elem.removeEventListener('click', toggleMenu);
+        document.body.removeEventListener('click', closeMenu);
+    }
 
-        options = utils.extend(defaults, options || {});
+    function checkOverflow (viewportWidth) {
+        if (!$elem) { return; }
 
-        return {
-            toggleMenu: utils.delegate(utils.criteria.hasClass(options.selectedClass), function (e) {
-                this.classList.toggle(options.toggledClass);
-                e.preventDefault();
-            }),
-            enableClick: function ( ) {
-                elem.addEventListener('click', this.toggleMenu);
-                document.body.addEventListener('click', this.closeMenu = function (e) {
-                    if (elem.classList.contains(options.toggledClass) && utils.getClosest(e.target, elemSelector) !== elem) {
-                        elem.classList.remove(options.toggledClass);
-                    }
-                }.bind(this));
-            },
-            disableClick: function ( ) {
-                elem.removeEventListener('click', this.toggleMenu);
-                document.body.removeEventListener('click', this.closeMenu);
-            },
-            checkOverflow: function (viewportWidth) {
-                if (!elem) { return; }
+        viewportWidth = viewportWidth || window.innerWidth;
 
-                viewportWidth = viewportWidth || window.innerWidth;
+        if (!$elem.classList.contains(options.collapsedClass) && isOverflowed($elem)) {
+            breakpoint = $elem.scrollWidth;
+            $elem.classList.add(options.collapsedClass);
+            enableClick();
+        } else if (breakpoint < viewportWidth) {
+            breakpoint = null;
+            $elem.classList.remove(options.collapsedClass);
+            disableClick();
+        }
 
-                if (!elem.classList.contains(options.collapsedClass) && utils.isOverflowed(elem)) {
-                    breakpoint = elem.scrollWidth;
-                    elem.classList.add(options.collapsedClass);
-                    this.enableClick();
-                } else if (breakpoint < viewportWidth) {
-                    breakpoint = null;
-                    elem.classList.remove(options.collapsedClass);
-                    this.disableClick();
-                }
+        $elem.classList.remove(options.toggledClass);
+    }
 
-                elem.classList.remove(options.toggledClass);
-            }
-        };
-    };
+    return { toggleMenu, checkOverflow };
+};
 
-
-    // Expose to interface
-	if (typeof module === 'object' && typeof module.exports === 'object') {
-		module.exports = CollapsibleMenu;
-	} else if (typeof define === 'function' && define.amd) {
-		define('CollapsibleMenu', function ( ) { return CollapsibleMenu; } );
-	}
-}));
+export default Collapsible;
